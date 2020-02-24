@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>使用hexo搭建blog</title>
+    <link href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/"/>
+    <url>/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/</url>
+    
+    <content type="html"><![CDATA[<ol><li><p>安装node.js和hexo框架(具体步骤可参照<a href="https://www.bilibili.com/video/av44544186?from=search&seid=8099617244954028635" target="_blank" rel="noopener">视频</a>)</p></li><li><p>进入BlogRoot/blog文件夹</p><pre><code class="linux">$ cd BlogRoot/blog</code></pre></li><li><p>初始化一个博客,初始化的时候使用sudo,否则会出现permission denied的提示</p><pre><code class="linux">$ sudo hexo init</code></pre></li><li><p>创建一篇博客正文</p><pre><code class="linux">$ sudo hexo n &quot;文件名&quot;</code></pre></li><li><p>启动博客,就可以在本地预览博客内容了</p><pre><code class="linux">$ sudo hexo s</code></pre></li><li><p>清理public folder和database folder</p><pre><code class="linux">$ sudo hexo clean</code></pre></li><li><p>生成</p><pre><code class="linux">$ sudo hexo g</code></pre></li><li><p>将博客部署到github上</p><blockquote><ol><li>新建一个repository,名字必须为 昵称.github.io</li><li>在blog目录安装git部署插件<pre><code class="linux">$ cnpm install --save hexo-deployer-git</code></pre></li><li>修改博客的部署配置<blockquote><ol><li>打开 blg目录下的 _config.yml文件,在文件的最下方可以看到默认的部署配置如下<pre><code class="linux"># Deployment## Docs: https://hexo.io/docs/deployment.htmldeploy:type: &#39;&#39;</code></pre></li><li>将其type设置为git,repo设置为刚才创建的github reposit地址, branch设置为master分支<pre><code class="linux"># Deployment## Docs: https://hexo.io/docs/deployment.htmldeploy:type: gitrepo: https://github.com/JohnBuffalo/JohnBuffalo.github.io.git    branch: master</code></pre></li><li>配置文件修改完毕后,输入下面的命令就可以开始部署了<pre><code class="linux">$ hexo d</code></pre></li></ol></blockquote></li></ol></blockquote></li><li><p>之后需要创建新的博客文章了只需要重复4,5,6,7步即可,需要注意的是上面所有的操作都是在 blog/目录下进行的, 而且都需要管理员权限</p></li></ol>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>博客</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
