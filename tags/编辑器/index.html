@@ -6,12 +6,12 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>时间之外的往事</title>
+  <title>Tag: 编辑器 | 时间之外的往事</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="码农,精酿">
 <meta property="og:type" content="website">
 <meta property="og:title" content="时间之外的往事">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:url" content="http://yoursite.com/tags/%E7%BC%96%E8%BE%91%E5%99%A8/index.html">
 <meta property="og:site_name" content="时间之外的往事">
 <meta property="og:description" content="码农,精酿">
 <meta property="og:locale" content="zh_CN">
@@ -158,44 +158,34 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-Unity获取窗口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
     
-      <header class="article-header">
-        
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2020" class="archive-year">2020</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/" class="archive-article-date">
+  	<time datetime="2020-03-24T14:25:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-24</time>
+</a>
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/">Unity获取窗口</a>
+      <a class="archive-article-title" href="/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/">Unity获取窗口</a>
     </h1>
   
 
-        
-        <a href="/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/" class="archive-article-date">
-  	<time datetime="2020-03-24T14:25:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="获取窗口"><a href="#获取窗口" class="headerlink" title="获取窗口"></a>获取窗口</h1><p>最近在做技能编辑器,其中用到了Timeline来生成时间轴,但是当需要强制刷新Timeline窗口时候出现了无法找到窗口实例的error.<br>会出错的代码如下:</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RefreshTimelineWindow</span>(<span class="params"></span>)</span>&#123;           </span><br><span class="line">    <span class="keyword">var</span> windowType = <span class="keyword">typeof</span>(UnityEditor.Editor).Assembly.GetType(<span class="string">"UnityEditor.Timeline.TimelineWindow"</span>);</span><br><span class="line">    <span class="keyword">var</span> window = EditorWindow.GetWindow(windowType);</span><br><span class="line">    <span class="keyword">if</span>(window)</span><br><span class="line">        window.Repaint();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>报错信息如下:即找不到该Type导致GetWindow获取实例失败.</p>
-<blockquote>
-<p>FindAllObjectsOfType: Invalid Type<br>UnityEditor.EditorWindow:GetWindow(Type)<br>NullReferenceException: Object reference not set to an instance of an object</p>
-</blockquote>
-<p>首先我怀疑是Timeline窗口的类名写错了,所以使用反射打印出了所有所有继承自EditorWindow的类,代码如下</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = <span class="keyword">new</span> System.Collections.Generic.List&lt;System.Type&gt;();</span><br><span class="line">System.Reflection.Assembly[] AS = System.AppDomain.CurrentDomain.GetAssemblies();</span><br><span class="line">System.Type editorWindow = <span class="keyword">typeof</span>(EditorWindow);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> A <span class="keyword">in</span> AS)</span><br><span class="line">&#123;</span><br><span class="line">    System.Type[] types = A.GetTypes();</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> T <span class="keyword">in</span> types)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (T.IsSubclassOf(editorWindow))</span><br><span class="line">            result.Add(T);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">result.ToArray();</span><br></pre></td></tr></table></figure>
-<p>打印出了167个继承自EditorWindow的类,包含Timeline名字的类只有一个,正是”UnityEditor.Timeline.TimelineWindow”.<br>不知道这是unity自己的bug还是我使用有误会,于是更换了思路.直接获取当前开启的所有窗口,在里面找出Timeline窗口然后调用Repaint()方法即可.代码如下:</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">EditorWindow[] allWindows = Resources.FindObjectsOfTypeAll&lt;EditorWindow&gt;();</span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> window <span class="keyword">in</span> allWindows)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(window.GetType().Name == <span class="string">"TimelineWindow"</span>)&#123;</span><br><span class="line">        window.Repaint();</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -207,152 +197,19 @@
 		</ul>
 	</div>
 
-      
+          
 
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
-    <article id="post-使用hexo搭建blog" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
+    </div></section>
+  
+
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/">使用hexo搭建blog</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/" class="archive-article-date">
-  	<time datetime="2020-02-23T08:20:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ol>
-<li><p>安装node.js和hexo框架(具体步骤可参照<a href="https://www.bilibili.com/video/av44544186?from=search&seid=8099617244954028635" target="_blank" rel="noopener">视频</a>)</p>
-</li>
-<li><p>进入BlogRoot/blog文件夹</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd BlogRoot&#x2F;blog</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>初始化一个博客,初始化的时候使用sudo,否则会出现permission denied的提示</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo init</span><br></pre></td></tr></table></figure></li>
-<li><p>创建一篇博客正文</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo n &quot;文件名&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>启动博客,就可以在本地预览博客内容了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo s</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>清理public folder和database folder</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo clean</span><br></pre></td></tr></table></figure></li>
-<li><p>生成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo g</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将博客部署到github上</p>
-<blockquote>
-<ol>
-<li>新建一个repository,名字必须为 昵称.github.io</li>
-<li>在blog目录安装git部署插件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;$ cnpm install --save hexo-deployer-git</span><br></pre></td></tr></table></figure></li>
-<li>修改博客的部署配置<blockquote>
-<ol>
-<li>打开 blg目录下的 _config.yml文件,在文件的最下方可以看到默认的部署配置如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">&gt;&gt;## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">&gt;&gt;deploy:</span><br><span class="line"> type: &#39;&#39;</span><br></pre></td></tr></table></figure></li>
-<li>将其type设置为git,repo设置为刚才创建的github reposit地址, branch设置为master分支<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">&gt;&gt;## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">&gt;&gt;deploy:</span><br><span class="line"> type: git</span><br><span class="line"> repo: https:&#x2F;&#x2F;github.com&#x2F;JohnBuffalo&#x2F;JohnBuffalo.github.io.git    </span><br><span class="line"> branch: master</span><br></pre></td></tr></table></figure></li>
-<li>配置文件修改完毕后,输入下面的命令就可以开始部署了<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;$ hexo d</span><br></pre></td></tr></table></figure></li>
-</ol>
-</blockquote>
-</li>
-</ol>
-</blockquote>
-</li>
-<li><p>之后需要创建新的博客文章了只需要重复4,5,6,7步即可,需要注意的是上面所有的操作都是在 blog/目录下进行的, 而且都需要管理员权限</p>
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">博客</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-  
 
 
           </div>
@@ -374,10 +231,10 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
+		isHome: false,
 		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

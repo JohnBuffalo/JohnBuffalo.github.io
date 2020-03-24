@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>时间之外的往事</title>
+  <title>Unity获取窗口 | 时间之外的往事</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="码农,精酿">
-<meta property="og:type" content="website">
-<meta property="og:title" content="时间之外的往事">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="获取窗口最近在做技能编辑器,其中用到了Timeline来生成时间轴,但是当需要强制刷新Timeline窗口时候出现了无法找到窗口实例的error.会出错的代码如下: 123456void RefreshTimelineWindow()&amp;#123;               var windowType &#x3D; typeof(UnityEditor.Editor).Assembly.GetType(&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity获取窗口">
+<meta property="og:url" content="http://yoursite.com/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/index.html">
 <meta property="og:site_name" content="时间之外的往事">
-<meta property="og:description" content="码农,精酿">
+<meta property="og:description" content="获取窗口最近在做技能编辑器,其中用到了Timeline来生成时间轴,但是当需要强制刷新Timeline窗口时候出现了无法找到窗口实例的error.会出错的代码如下: 123456void RefreshTimelineWindow()&amp;#123;               var windowType &#x3D; typeof(UnityEditor.Editor).Assembly.GetType(&quot;">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-24T14:25:03.000Z">
+<meta property="article:modified_time" content="2020-03-24T14:28:38.556Z">
 <meta property="article:author" content="时间之外">
+<meta property="article:tag" content="编辑器">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="时间之外的往事" type="application/atom+xml">
@@ -156,16 +159,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-Unity获取窗口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-Unity获取窗口" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/">Unity获取窗口</a>
+    <h1 class="article-title" itemprop="name">
+      Unity获取窗口
     </h1>
   
 
@@ -192,6 +193,27 @@
       
 
       
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
     </div>
     <div class="article-info article-info-index">
       
@@ -210,16 +232,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/03/24/Unity%E8%8E%B7%E5%8F%96%E7%AA%97%E5%8F%A3/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">使用hexo搭建blog</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -239,119 +320,14 @@
 
 
 
-
   
-    <article id="post-使用hexo搭建blog" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/">使用hexo搭建blog</a>
-    </h1>
   
 
-        
-        <a href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/" class="archive-article-date">
-  	<time datetime="2020-02-23T08:20:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ol>
-<li><p>安装node.js和hexo框架(具体步骤可参照<a href="https://www.bilibili.com/video/av44544186?from=search&seid=8099617244954028635" target="_blank" rel="noopener">视频</a>)</p>
-</li>
-<li><p>进入BlogRoot/blog文件夹</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd BlogRoot&#x2F;blog</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>初始化一个博客,初始化的时候使用sudo,否则会出现permission denied的提示</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo init</span><br></pre></td></tr></table></figure></li>
-<li><p>创建一篇博客正文</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo n &quot;文件名&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>启动博客,就可以在本地预览博客内容了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo s</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>清理public folder和database folder</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo clean</span><br></pre></td></tr></table></figure></li>
-<li><p>生成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hexo g</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将博客部署到github上</p>
-<blockquote>
-<ol>
-<li>新建一个repository,名字必须为 昵称.github.io</li>
-<li>在blog目录安装git部署插件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;$ cnpm install --save hexo-deployer-git</span><br></pre></td></tr></table></figure></li>
-<li>修改博客的部署配置<blockquote>
-<ol>
-<li>打开 blg目录下的 _config.yml文件,在文件的最下方可以看到默认的部署配置如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">&gt;&gt;## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">&gt;&gt;deploy:</span><br><span class="line"> type: &#39;&#39;</span><br></pre></td></tr></table></figure></li>
-<li>将其type设置为git,repo设置为刚才创建的github reposit地址, branch设置为master分支<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">&gt;&gt;## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">&gt;&gt;deploy:</span><br><span class="line"> type: git</span><br><span class="line"> repo: https:&#x2F;&#x2F;github.com&#x2F;JohnBuffalo&#x2F;JohnBuffalo.github.io.git    </span><br><span class="line"> branch: master</span><br></pre></td></tr></table></figure></li>
-<li>配置文件修改完毕后,输入下面的命令就可以开始部署了<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;$ hexo d</span><br></pre></td></tr></table></figure></li>
-</ol>
-</blockquote>
-</li>
-</ol>
-</blockquote>
-</li>
-<li><p>之后需要创建新的博客文章了只需要重复4,5,6,7步即可,需要注意的是上面所有的操作都是在 blog/目录下进行的, 而且都需要管理员权限</p>
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">博客</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/23/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BAblog/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
+  
 
   
+
   
 
 
@@ -374,8 +350,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
