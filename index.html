@@ -173,7 +173,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-04-07 21:53:53 / 修改时间：21:56:31" itemprop="dateCreated datePublished" datetime="2020-04-07T21:53:53+08:00">2020-04-07</time>
+              <time title="创建时间：2020-04-07 21:53:53 / 修改时间：22:54:41" itemprop="dateCreated datePublished" datetime="2020-04-07T21:53:53+08:00">2020-04-07</time>
             </span>
 
           
@@ -282,42 +282,37 @@ set (THIRDPART_SRC ${THIRDPART_SRC} ${RAPIDJSON_SRC})
 <pre><code class="cpp">extern &quot;C&quot; {
 LUALIB_API int luaopen_rapidjson(lua_State* L)
 {
-     lua_newtable(L); // [rapidjson]
+     lua_newtable(L); 
 
-     luax::setfuncs(L, methods); // [rapidjson]
+     luax::setfuncs(L, methods); 
+     lua_pushliteral(L, &quot;rapidjson&quot;); 
+     lua_setfield(L, -2, &quot;_NAME&quot;); 
 
-     lua_pushliteral(L, &quot;rapidjson&quot;); // [rapidjson, name]
-     lua_setfield(L, -2, &quot;_NAME&quot;); // [rapidjson]
+     lua_pushliteral(L, LUA_RAPIDJSON_VERSION);
+     lua_setfield(L, -2, &quot;_VERSION&quot;); 
 
-     lua_pushliteral(L, LUA_RAPIDJSON_VERSION); // [rapidjson, version]
-     lua_setfield(L, -2, &quot;_VERSION&quot;); // [rapidjson]
+     lua_getfield(L, -1, &quot;null&quot;); 
+     values::nullref = luaL_ref(L, LUA_REGISTRYINDEX); 
+     createSharedMeta(L, &quot;json.object&quot;, &quot;object&quot;);
+     createSharedMeta(L, &quot;json.array&quot;, &quot;array&quot;);
 
-     lua_getfield(L, -1, &quot;null&quot;); // [rapidjson, json.null]
-     values::nullref = luaL_ref(L, LUA_REGISTRYINDEX); // [rapidjson]
+     Userdata&lt;Document&gt;::luaopen(L);
+     Userdata&lt;SchemaDocument&gt;::luaopen(L);
+     Userdata&lt;SchemaValidator&gt;::luaopen(L);
 
-</code></pre>
-</li>
-</ol>
-<pre><code>    createSharedMeta(L, &quot;json.object&quot;, &quot;object&quot;);
-    createSharedMeta(L, &quot;json.array&quot;, &quot;array&quot;);
-
-    Userdata&lt;Document&gt;::luaopen(L);
-    Userdata&lt;SchemaDocument&gt;::luaopen(L);
-    Userdata&lt;SchemaValidator&gt;::luaopen(L);
-
-    return 1;
-}</code></pre><p>}</p>
-<pre><code>由于ios的限制,我们无法加载动态库,所以需要直接编译到进程里面去.
-为此,LuaEnv中提供了一个API:
-```c#
-public void AddBuildin(string name, LuaCSFunction initer)
+     return 1;
+ }
+}</code></pre>
+<p>由于ios的限制,我们无法加载动态库,所以需要直接编译到进程里面去.<br>为此,LuaEnv中提供了一个API:</p>
+<pre><code class="c#">public void AddBuildin(string name, LuaCSFunction initer)
 {
-    if (!Utils.IsStaticPInvokeCSFunction(initer))
-    {
-        throw new Exception(&quot;initer must be static and has MonoPInvokeCallback Attribute!&quot;);
-    }
-    buildin_initer.Add(name, initer);
-}</code></pre><blockquote>
+ if (!Utils.IsStaticPInvokeCSFunction(initer))
+ {
+     throw new Exception(&quot;initer must be static and has MonoPInvokeCallback Attribute!&quot;);
+ }
+ buildin_initer.Add(name, initer);
+}</code></pre>
+<blockquote>
 <ul>
 <li>@param name : Lua代码中require的module名</li>
 <li>@param initer : 原型 public delegate int lua_CSFunction(IntPtr L); 必须是静态函数,且带有MonoPInvokeCallbackAttribute属性修饰<br>新建一个脚本,扩展LuaDLL.Lua类,用来定义访问第三方库的静态函数</li>
@@ -325,17 +320,17 @@ public void AddBuildin(string name, LuaCSFunction initer)
 </blockquote>
 <pre><code class="c#">namespace LuaDLL
 { 
-    public partial class Lua
-    { 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaopen_rapidjson(System.IntPtr L);
+ public partial class Lua
+ { 
+     [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+     public static extern int luaopen_rapidjson(System.IntPtr L);
 
-        [MonoPInvokeCallback(typeof(LuaDLL.lua_CSFunction))]
-        public static int LoadRapidJson(System.IntPtr L)
-        {
-            return luaopen_rapidjson(L);
-        }
-    }
+     [MonoPInvokeCallback(typeof(LuaDLL.lua_CSFunction))]
+     public static int LoadRapidJson(System.IntPtr L)
+     {
+         return luaopen_rapidjson(L);
+     }
+ }
 }</code></pre>
 <p>然后调用AddBuildin</p>
 <pre><code class="c#">LuaEnv luaenv = new LuaEnv();
@@ -348,6 +343,8 @@ luaenv.AddBuildin(&quot;rapidjson&quot;, LuaDLL.Lua.LoadRapidJson);</code></pre>
 <li>How: DllImport(dll名字), CallingConvention = CallingConvention.Cdecl; Cdecl: 调用者清空栈(the caller cleans the stack.Enables calling functions with varargs) 这一块不懂.<br>方法声明需要用到static,extern关键字,方法名需要和dll中的方法名一致.约定的命名规则是luaopen_xxx<br>在初始化环节,lua调用c#(LoadRapidJson),再从c#调用c的dll里的方法(luaopen_rapidjson).为了从lua调用c#代码,需要使用MonoPInvokeCallback属性.注：MonoPInvokeCallback标签可以保证在禁止了JIT的环境下也能运行</li>
 </ul>
 </blockquote>
+</li>
+</ol>
 <ul>
 <li>在上述工作全部完成的情况下,调用require(‘rapidjson’)时报了如下的错误<blockquote>
 <p>EntryPointNotFoundException: luaopen_rapidjson<br>有两种情况可能出现这个报错</p>
