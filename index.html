@@ -158,6 +158,172 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-从零搭建手游xlua环境" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/07/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E6%89%8B%E6%B8%B8xlua%E7%8E%AF%E5%A2%83/">从零搭建手游xlua环境</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/07/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E6%89%8B%E6%B8%B8xlua%E7%8E%AF%E5%A2%83/" class="archive-article-date">
+  	<time datetime="2020-04-07T13:53:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文涉及到的xlua知识点都可以在<a href=""https://github.com/Tencent/xLua"">xlua教程</a>找到.我希望通过这篇文章,能够给出一个通用的模板来搭建手游xlua开发环境.环境搭建大致可分为以下几个步骤:</p>
+<p>另外本文使用的平台是mac osx</p>
+<ol>
+<li>导入xlua</li>
+<li>自定义lualoader</li>
+<li>增删第三方库</li>
+<li>打包环境配置</li>
+</ol>
+<h2 id="1-导入xlua"><a href="#1-导入xlua" class="headerlink" title="1. 导入xlua"></a>1. 导入xlua</h2><blockquote>
+<ol>
+<li>从<a href="https://github.com/Tencent/xLua" target="_blank" rel="noopener">xlua</a>下载工程文件.</li>
+<li>新建一个空的unity工程,将xlua工程导入</li>
+</ol>
+</blockquote>
+<h2 id="2-自定义lualoader"><a href="#2-自定义lualoader" class="headerlink" title="2. 自定义lualoader"></a>2. 自定义lualoader</h2><blockquote>
+<p>这个loader的作用是,当调用require方法时,从哪个路径去加载module.<br>每个项目中都应该去定义这个loader,因为如果不自定义这个loader的话,xlua只能从同目录下的Resource文件夹加载lua文件,同时由于Resource只能支持有限的数据格式,所以需要在lua文件添加.txt后缀.</p>
+</blockquote>
+<p>xlua定义loader很简单,只涉及到一个简单的接口:</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">byte</span>[] <span class="title">CustomLoader</span>(<span class="params"><span class="keyword">ref</span> <span class="keyword">string</span> filepath</span>)</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> LuaEnv.Addloader(CustomLoader loader);</span><br><span class="line"><span class="comment">//example</span></span><br><span class="line">LuaEnv luaenv = <span class="keyword">new</span> LuaEnv();</span><br><span class="line">LuaLoader lualoader = <span class="keyword">new</span> LuaLoader();</span><br><span class="line">luaenv.Addloader(lualoader.LoadLuaScript);</span><br><span class="line"><span class="comment">//example-lualoader</span></span><br><span class="line"><span class="keyword">readonly</span> <span class="keyword">string</span> PATH_LUA_TEXT = Application.dataPath + <span class="string">"/Scripts/Lua"</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">byte</span>[] <span class="title">LoadLuaScript</span>(<span class="params"><span class="keyword">ref</span> <span class="keyword">string</span> filepath</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] luaBytes = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">string</span> luaPath;</span><br><span class="line">    <span class="comment">//根据平台的不同,需要定义不同的路径</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">if</span> UNITY_EDITOR_OSX</span></span><br><span class="line">        luaPath = PATH_LUA_TEXT+<span class="string">"/"</span>+filepath+<span class="string">".lua"</span>;</span><br><span class="line">        <span class="keyword">if</span>(File.Exists(luaPath))&#123;</span><br><span class="line">            luaBytes = File.ReadAllBytes(luaPath);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    <span class="keyword">return</span> luaBytes;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-增删第三方库"><a href="#3-增删第三方库" class="headerlink" title="3 增删第三方库"></a>3 增删第三方库</h2><ol>
+<li>准备库的源文件<blockquote>
+<ul>
+<li>完成xlua导入后,在与Assets同级的目录下找到build文件夹</li>
+<li>本文以xlua官方教程,导入rapidjson为例</li>
+<li>将rapidjson的头文件放在 $UnityProj\build\lua-rapidjson\include文件夹</li>
+<li>将rapidjson的源代码放在 $UnityProj\build\lua-rapidjson\source文件夹</li>
+</ul>
+</blockquote>
+</li>
+<li>在CMakeLists.txt加入扩展<blockquote>
+<ul>
+<li>xlua的各平台Plugins编译使用cmake编译,好处是所有平台的配置都在统一的文件中,且大部分逻辑都是跨平台的</li>
+<li>xlua配套的CMakeLists.txt为第三方扩展提供了扩展点(都是list)</li>
+<li>THIRDPART_INC：第三方扩展的头文件搜索路径。</li>
+<li>THIRDPART_SRC：第三方扩展的源代码。</li>
+<li>THIRDPART_LIB：第三方扩展依赖的库。</li>
+</ul>
+</blockquote>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#begin lua-rapidjson</span></span><br><span class="line"><span class="keyword">set</span> (RAPIDJSON_SRC lua-rapidjson/source/rapidjson.cpp)</span><br><span class="line"><span class="keyword">set_property</span>(</span><br><span class="line">    SOURCE <span class="variable">$&#123;RAPIDJSON_SRC&#125;</span></span><br><span class="line">    APPEND</span><br><span class="line">    PROPERTY COMPILE_DEFINITIONS</span><br><span class="line">    LUA_LIB</span><br><span class="line">)</span><br><span class="line"><span class="keyword">list</span>(APPEND THIRDPART_INC  lua-rapidjson/<span class="keyword">include</span>)</span><br><span class="line"><span class="keyword">set</span> (THIRDPART_SRC <span class="variable">$&#123;THIRDPART_SRC&#125;</span> <span class="variable">$&#123;RAPIDJSON_SRC&#125;</span>)</span><br><span class="line"><span class="comment">#end lua-rapidjson</span></span><br></pre></td></tr></table></figure></li>
+<li>使用命令行运行xlua自带的编译脚本<blockquote>
+<p>需要注意的是, 每个平台都需要单独编译,而且编译的版本应该是lua53,而非luajit,因为luajit已经停止维护了.<br>以编译osx平台为例, 在$xlua路径下输入以下命令即可开始编译</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ .&#x2F;make_osx_lua53.sh</span><br></pre></td></tr></table></figure></li>
+<li>编译成功后,会生成一个xlua.bundle文件,路径为 $ build/plugin_lua53/Plugins, 用这个文件替换掉工程中 Assets/Plugins/xlua.bundle文件即可</li>
+<li>IOS的编译和osx类似,只是执行的脚本为 make_ios_lua53.sh</li>
+<li>Android编译需要用到Android NDK, 在NDK版本选择的时候, xlua Q&amp;A中给出的解决方案(2019.4.13)用到的版本为android-ndk-r10e, 写这篇文章(2020.4.3)时的最新版本为android-ndk-r21, 所以先尝试使用最新版本,如果失败再尝试android-ndk-r10e版本.</li>
+<li>下载了ndk后需要设置ndk的环境变量<blockquote>
+<ul>
+<li>在terminal输入命令 vim ~/.bash_profile</li>
+<li>在.bash_profile中提行加入 export ANDROID_NDK=/Users/baijun/android-ndk-r10e,保存退出. 注意这里是ndk的根目录</li>
+<li>再在termial输入命令 source ~/.bash_profile, 为ndk添加环境变量</li>
+<li>cmd+q退出terminal,再重启terminal</li>
+<li>执行xlua/build下的 make_android_lua53_arm64.sh开始编译</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<p>经过测试,r21版本是可以按次流程编译成功的,但是没有再进一步的测试,是否可以顺利打包等等.因为懒.</p>
+<p>后续继续使用官方教程里的r10e版本的ndk</p>
+<ol start="8">
+<li>c#侧集成<br>所有lua的C扩展库都会提供个luaopen_xxx的函数，xxx是动态库的名字，比如lua-rapidjson库该函数是luaopen_rapidjson<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line"><span class="function">LUALIB_API <span class="keyword">int</span> <span class="title">luaopen_rapidjson</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        lua_newtable(L); <span class="comment">// [rapidjson]</span></span><br><span class="line"></span><br><span class="line">        luax::setfuncs(L, methods); <span class="comment">// [rapidjson]</span></span><br><span class="line"></span><br><span class="line">        lua_pushliteral(L, <span class="string">"rapidjson"</span>); <span class="comment">// [rapidjson, name]</span></span><br><span class="line">        lua_setfield(L, <span class="number">-2</span>, <span class="string">"_NAME"</span>); <span class="comment">// [rapidjson]</span></span><br><span class="line"></span><br><span class="line">        lua_pushliteral(L, LUA_RAPIDJSON_VERSION); <span class="comment">// [rapidjson, version]</span></span><br><span class="line">        lua_setfield(L, <span class="number">-2</span>, <span class="string">"_VERSION"</span>); <span class="comment">// [rapidjson]</span></span><br><span class="line"></span><br><span class="line">        lua_getfield(L, <span class="number">-1</span>, <span class="string">"null"</span>); <span class="comment">// [rapidjson, json.null]</span></span><br><span class="line">        values::nullref = luaL_ref(L, LUA_REGISTRYINDEX); <span class="comment">// [rapidjson]</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        createSharedMeta(L, <span class="string">"json.object"</span>, <span class="string">"object"</span>);</span><br><span class="line">        createSharedMeta(L, <span class="string">"json.array"</span>, <span class="string">"array"</span>);</span><br><span class="line"></span><br><span class="line">        Userdata&lt;Document&gt;::luaopen(L);</span><br><span class="line">        Userdata&lt;SchemaDocument&gt;::luaopen(L);</span><br><span class="line">        Userdata&lt;SchemaValidator&gt;::luaopen(L);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+由于ios的限制,我们无法加载动态库,所以需要直接编译到进程里面去.<br>为此,LuaEnv中提供了一个API:<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AddBuildin</span>(<span class="params"><span class="keyword">string</span> name, LuaCSFunction initer</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!Utils.IsStaticPInvokeCSFunction(initer))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"initer must be static and has MonoPInvokeCallback Attribute!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    buildin_initer.Add(name, initer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>@param name : Lua代码中require的module名</li>
+<li>@param initer : 原型 public delegate int lua_CSFunction(IntPtr L); 必须是静态函数,且带有MonoPInvokeCallbackAttribute属性修饰<br>新建一个脚本,扩展LuaDLL.Lua类,用来定义访问第三方库的静态函数</li>
+</ul>
+</blockquote>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">LuaDLL</span></span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">Lua</span></span><br><span class="line">    &#123; </span><br><span class="line">        [<span class="meta">DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)</span>]</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">luaopen_rapidjson</span>(<span class="params">System.IntPtr L</span>)</span>;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">MonoPInvokeCallback(typeof(LuaDLL.lua_CSFunction))</span>]</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">LoadRapidJson</span>(<span class="params">System.IntPtr L</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> luaopen_rapidjson(L);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+然后调用AddBuildin<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LuaEnv luaenv = <span class="keyword">new</span> LuaEnv();</span><br><span class="line">luaenv.AddBuildin(<span class="string">"rapidjson"</span>, LuaDLL.Lua.LoadRapidJson);</span><br></pre></td></tr></table></figure>
+这里的技巧是使用partial关键字,在你新建的脚本,比如就叫LuaThirdLibExtension.cs中来扩展Lua类,更有利于管理第三方库的增删可debug.<blockquote>
+<p>DllImport的使用</p>
+<ul>
+<li>Why: .net framework 会将源码先编译为IL/MSIL, 然后在CLR中通过JIT compiler编译为native code执行. 我们游戏中通过c#编写的源码就属于这一类, 也就是所谓的托管代码(managed code) 而我们将要导入的lua库是由c/c++编写的,他们属于非托管代码(unmanaged code),因为在预编译阶段CLR只会拷贝编译托管代码,所以我们需要为非托管代码添加DllImport属性,使其不被裁剪.</li>
+<li>How: DllImport(dll名字), CallingConvention = CallingConvention.Cdecl; Cdecl: 调用者清空栈(the caller cleans the stack.Enables calling functions with varargs) 这一块不懂.<br>方法声明需要用到static,extern关键字,方法名需要和dll中的方法名一致.约定的命名规则是luaopen_xxx<br>在初始化环节,lua调用c#(LoadRapidJson),再从c#调用c的dll里的方法(luaopen_rapidjson).为了从lua调用c#代码,需要使用MonoPInvokeCallback属性.注：MonoPInvokeCallback标签可以保证在禁止了JIT的环境下也能运行</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li>在上述工作全部完成的情况下,调用require(‘rapidjson’)时报了如下的错误<blockquote>
+<p>EntryPointNotFoundException: luaopen_rapidjson<br>有两种情况可能出现这个报错</p>
+<ul>
+<li>导入xlua.bundle后没有重启unity</li>
+<li>编译失败</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>今天在这个问题上卡了很久,最后发现是cmakelist.txt配置错误导致没有编译rapidjson</p>
+<p>之所以没有编译到,是因为没有认真阅读cmakelist.txt里的代码,将rapidjson的编译配置(如下)写在了cmakelist.txt的末尾,此时已经结束了编译……(汗)</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#begin lua-rapidjson</span></span><br><span class="line"><span class="keyword">set</span> (RAPIDJSON_SRC lua-rapidjson/source/rapidjson.cpp)</span><br><span class="line"><span class="keyword">set_property</span>(</span><br><span class="line">    SOURCE <span class="variable">$&#123;RAPIDJSON_SRC&#125;</span></span><br><span class="line">    APPEND</span><br><span class="line">    PROPERTY COMPILE_DEFINITIONS</span><br><span class="line">    LUA_LIB</span><br><span class="line">)</span><br><span class="line"><span class="keyword">list</span>(APPEND THIRDPART_INC  lua-rapidjson/<span class="keyword">include</span>)</span><br><span class="line"><span class="keyword">set</span> (THIRDPART_SRC <span class="variable">$&#123;THIRDPART_SRC&#125;</span> <span class="variable">$&#123;RAPIDJSON_SRC&#125;</span>)</span><br><span class="line"><span class="comment">#end lua-rapidjson</span></span><br></pre></td></tr></table></figure>
+<p>- </p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">xlua</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/07/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E6%89%8B%E6%B8%B8xlua%E7%8E%AF%E5%A2%83/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Unity获取窗口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -446,6 +612,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">编辑器</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">xlua</a>
               </li>
              
               <li class="article-tag-list-item">
